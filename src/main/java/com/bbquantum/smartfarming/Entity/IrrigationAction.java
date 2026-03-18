@@ -25,4 +25,46 @@ public class IrrigationAction {
     private ActionStatus actionStatus;
 
     private String actionStatusMessage;
+
+    public IrrigationAction() {}
+
+    public Decisions getDecision() {
+        return decision;
+    }
+
+    public void setDecision(Decisions decision) {
+        this.decision = decision;
+    }
+
+    public ActionOperation getAction() {
+        return action;
+    }
+
+    public void setAction(ActionOperation action) {
+        this.action = action;
+    }
+
+    public LocalDateTime getTimeOfExecution() {
+        return timeOfExecution;
+    }
+
+    public void setTimeOfExecution(LocalDateTime timeOfExecution) {
+        this.timeOfExecution = timeOfExecution;
+    }
+
+    public ActionStatus getActionStatus() {
+        return actionStatus;
+    }
+
+    public void setActionStatus(ActionStatus actionStatus) {
+        this.actionStatus = actionStatus;
+    }
+
+    public String getActionStatusMessage() {
+        return actionStatusMessage;
+    }
+
+    public void setActionStatusMessage(String actionStatusMessage) {
+        this.actionStatusMessage = actionStatusMessage;
+    }
 }

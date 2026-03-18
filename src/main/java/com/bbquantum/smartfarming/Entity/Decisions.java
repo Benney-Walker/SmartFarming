@@ -35,4 +35,70 @@ public class Decisions {
 
     @OneToOne(mappedBy = "decision")
     private IrrigationAction irrigationAction;
+
+    public Decisions() {}
+
+    public Fields getField() {
+        return field;
+    }
+
+    public void setField(Fields field) {
+        this.field = field;
+    }
+
+    public LocalDateTime getDecisionTime() {
+        return decisionTime;
+    }
+
+    public void setDecisionTime(LocalDateTime decisionTime) {
+        this.decisionTime = decisionTime;
+    }
+
+    public IrrigationDecision getIrrigationDecision() {
+        return irrigationDecision;
+    }
+
+    public void setIrrigationDecision(IrrigationDecision irrigationDecision) {
+        this.irrigationDecision = irrigationDecision;
+    }
+
+    public String getDecisionMessage() {
+        return decisionMessage;
+    }
+
+    public void setDecisionMessage(String decisionMessage) {
+        this.decisionMessage = decisionMessage;
+    }
+
+    public String getDecisionReason() {
+        return decisionReason;
+    }
+
+    public void setDecisionReason(String decisionReason) {
+        this.decisionReason = decisionReason;
+    }
+
+    public Anomaly getAnomaly() {
+        return anomaly;
+    }
+
+    public void setAnomaly(Anomaly anomaly) {
+        this.anomaly = anomaly;
+    }
+
+    public Models getModel() {
+        return model;
+    }
+
+    public void setModel(Models model) {
+        this.model = model;
+    }
+
+    public IrrigationAction getIrrigationAction() {
+        return irrigationAction;
+    }
+
+    public void setIrrigationAction(IrrigationAction irrigationAction) {
+        this.irrigationAction = irrigationAction;
+    }
 }

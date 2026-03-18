@@ -32,4 +32,60 @@ public class Fields {
     private List<Decisions> decisions;
 
     public Fields() {}
+
+    public String getFieldId() {
+        return fieldId;
+    }
+
+    public void setFieldId(String fieldId) {
+        this.fieldId = fieldId;
+    }
+
+    public String getFieldName() {
+        return fieldName;
+    }
+
+    public void setFieldName(String fieldName) {
+        this.fieldName = fieldName;
+    }
+
+    public String getFieldLocation() {
+        return fieldLocation;
+    }
+
+    public void setFieldLocation(String fieldLocation) {
+        this.fieldLocation = fieldLocation;
+    }
+
+    public LocalDate getDateOfRegistration() {
+        return dateOfRegistration;
+    }
+
+    public void setDateOfRegistration(LocalDate dateOfRegistration) {
+        this.dateOfRegistration = dateOfRegistration;
+    }
+
+    public Users getUser() {
+        return user;
+    }
+
+    public void setUser(Users user) {
+        this.user = user;
+    }
+
+    public List<RawEnvironmentalData> getRawEnvironmentalData() {
+        return rawEnvironmentalData;
+    }
+
+    public void setRawEnvironmentalData(List<RawEnvironmentalData> rawEnvironmentalData) {
+        this.rawEnvironmentalData = rawEnvironmentalData;
+    }
+
+    public List<Decisions> getDecisions() {
+        return decisions;
+    }
+
+    public void setDecisions(List<Decisions> decisions) {
+        this.decisions = decisions;
+    }
 }
