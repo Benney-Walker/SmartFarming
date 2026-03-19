@@ -28,6 +28,10 @@ public class IrrigationAction {
 
     public IrrigationAction() {}
 
+    public long getActionId() {
+        return actionId;
+    }
+
     public Decisions getDecision() {
         return decision;
     }

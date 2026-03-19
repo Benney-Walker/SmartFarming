@@ -32,6 +32,10 @@ public class RawEnvironmentalData {
 
     public RawEnvironmentalData() {}
 
+    public long getRawDataId() {
+        return rawDataId;
+    }
+
     public Fields getField() {
         return field;
     }

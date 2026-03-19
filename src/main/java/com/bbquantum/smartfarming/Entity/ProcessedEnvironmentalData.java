@@ -30,6 +30,10 @@ public class ProcessedEnvironmentalData {
 
     public ProcessedEnvironmentalData() {}
 
+    public long getProcessedDataId() {
+        return processedDataId;
+    }
+
     public RawEnvironmentalData getRawData() {
         return rawData;
     }

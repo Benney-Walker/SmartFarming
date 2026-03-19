@@ -38,6 +38,10 @@ public class Decisions {
 
     public Decisions() {}
 
+    public long getDecisionId() {
+        return decisionId;
+    }
+
     public Fields getField() {
         return field;
     }
