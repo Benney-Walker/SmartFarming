@@ -10,12 +10,15 @@ import java.util.List;
 public class Users {
 
     @Id
-    private String userId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long userId;
 
     private String userName;
 
-    private String contact;
+    @Column(unique = true, nullable = false,  length = 100)
+    private String emailAddress;
 
+    @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -28,11 +31,11 @@ public class Users {
 
     public Users(){}
 
-    public String getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
@@ -44,12 +47,12 @@ public class Users {
         this.userName = userName;
     }
 
-    public String getContact() {
-        return contact;
+    public String getEmailAddress() {
+        return emailAddress;
     }
 
-    public void setContact(String contact) {
-        this.contact = contact;
+    public void setEmailAddress(String contact) {
+        this.emailAddress = contact;
     }
 
     public String getPassword() {
