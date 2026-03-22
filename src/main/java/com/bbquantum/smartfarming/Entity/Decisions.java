@@ -34,7 +34,7 @@ public class Decisions {
     private Models model;
 
     @OneToOne(mappedBy = "decision")
-    private IrrigationAction irrigationAction;
+    private IrrigationAction action;
 
     public Decisions() {}
 
@@ -98,11 +98,11 @@ public class Decisions {
         this.model = model;
     }
 
-    public IrrigationAction getIrrigationAction() {
-        return irrigationAction;
+    public IrrigationAction getAction() {
+        return action;
     }
 
-    public void setIrrigationAction(IrrigationAction irrigationAction) {
-        this.irrigationAction = irrigationAction;
+    public void setAction(IrrigationAction irrigationAction) {
+        this.action = irrigationAction;
     }
 }

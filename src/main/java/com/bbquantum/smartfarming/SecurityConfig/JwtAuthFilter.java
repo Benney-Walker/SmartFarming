@@ -1,6 +1,7 @@
 package com.bbquantum.smartfarming.SecurityConfig;
 
 import com.bbquantum.smartfarming.Utility.JwtUtility;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,29 +30,46 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+
         String authHeader = request.getHeader("Authorization");
 
+        // no token → continue request
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String token = authHeader.substring(7);
-        String username = jwtUtility.getUsername(token);
-        List<String> roles = jwtUtility.getRoles(token);
+        try {
 
-        List<GrantedAuthority> authorities = roles.stream()
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toUnmodifiableList());
+            String token = authHeader.substring(7);
 
-        UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(
-                        username,
-                        null,
-                        authorities
-                );
+            String username = jwtUtility.getUsername(token);
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+            if(username != null
+                    && !jwtUtility.isTokenExpired(token)
+                    && SecurityContextHolder.getContext().getAuthentication() == null){
+
+                List<String> roles = jwtUtility.getRoles(token);
+
+                List<GrantedAuthority> authorities = roles.stream()
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList());
+
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                username,
+                                null,
+                                authorities
+                        );
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+
+        }catch (Exception e){
+
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
 
         filterChain.doFilter(request, response);
     }

@@ -3,11 +3,18 @@ package com.bbquantum.smartfarming.Service;
 import com.bbquantum.smartfarming.Constants.UserRole;
 import com.bbquantum.smartfarming.DTO.AddNewField;
 import com.bbquantum.smartfarming.DTO.AddNewUser;
+import com.bbquantum.smartfarming.DTO.LoginRequest;
+import com.bbquantum.smartfarming.DTO.LoginResponse;
 import com.bbquantum.smartfarming.Entity.Fields;
+import com.bbquantum.smartfarming.Entity.UserRoles;
 import com.bbquantum.smartfarming.Entity.Users;
 import com.bbquantum.smartfarming.Repository.FieldsRepo;
 import com.bbquantum.smartfarming.Repository.UsersRepo;
+import com.bbquantum.smartfarming.Utility.JwtUtility;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,10 +30,21 @@ public class AuthService {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public AuthService(UsersRepo usersRepo, FieldsRepo fieldsRepo, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    private final AuthenticationManager authenticationManager;
+
+    private final CustomUserDetailsService customUserDetailsService;
+
+    private final JwtUtility jwtUtility;
+
+    public AuthService(UsersRepo usersRepo, FieldsRepo fieldsRepo, BCryptPasswordEncoder bCryptPasswordEncoder,
+                       AuthenticationManager authenticationManager, CustomUserDetailsService customUserDetailsService,
+                       JwtUtility jwtUtility) {
         this.usersRepo = usersRepo;
         this.fieldsRepo = fieldsRepo;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.customUserDetailsService = customUserDetailsService;
+        this.jwtUtility = jwtUtility;
     }
 
     public ResponseEntity<?> addNewUser(AddNewUser addNewUser) {
@@ -45,13 +63,21 @@ public class AuthService {
         Users user = new Users();
         user.setUserName(userName);
         user.setEmailAddress(emailAddress);
-        user.setUserRole(role);
+
+        UserRoles newRole = new UserRoles();
+        newRole.setUser(user);
+        newRole.setRoles(role);
+
+        List<UserRoles> userRoles = new ArrayList<>();
+        userRoles.add(newRole);
+
+        user.setUserRoles(userRoles);
         usersRepo.save(user);
 
         return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity<?> addNewField(AddNewField addNewField) throws Exception {
+    public ResponseEntity<?> addNewField(AddNewField addNewField) {
         String fieldName = addNewField.getFieldName();
         String fieldLocation = addNewField.getFieldLocation();
         String userName = addNewField.getUserName();
@@ -62,7 +88,7 @@ public class AuthService {
         }
 
         if (fieldsRepo.findByFieldName(fieldName).isPresent()) {
-            throw new Exception("Field name already exists");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Field already exists");
         }
 
         Fields field = new Fields();
@@ -81,17 +107,44 @@ public class AuthService {
         return ResponseEntity.ok().build();
     }
 
-    public String initializeUserPassword(String emailAddress, String password) throws Exception {
-        Users user = usersRepo.findByEmailAddress(emailAddress)
-                .orElseThrow(() -> new Exception("Email address not found"));
+    public ResponseEntity<?> initializeUserPassword(String emailAddress, String password) {
+        Users user = usersRepo.findByEmailAddress(emailAddress).orElse(null);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
+        }
 
         String storedPassword = user.getPassword();
         if (storedPassword != null) {
-            throw new Exception("Password already added, refresh page to login");
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
+                    .body("Password already set");
         }
 
         user.setPassword(bCryptPasswordEncoder.encode(password));
         usersRepo.save(user);
-        return "success";
+        return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity<?> authenticateUser(LoginRequest request) {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmailAddress(),
+                        request.getPassword()
+                )
+        );
+
+        Users user = customUserDetailsService.getUserData(request.getEmailAddress());
+        List<String> rolesList = user.getUserRoles().stream().map(
+                role -> role.getRoles().name()
+        ).toList();
+
+        String authToken = jwtUtility.generateJwtToken(user.getUserName(), rolesList);
+
+        return ResponseEntity.ok(
+                new LoginResponse(
+                        user.getUserName(),
+                        rolesList,
+                        authToken
+                )
+        );
     }
 }

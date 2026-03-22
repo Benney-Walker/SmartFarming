@@ -21,8 +21,8 @@ public class Users {
 
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    private UserRole userRole;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    private List<UserRoles> userRoles;
 
     private LocalDate dateOfRegistration;
 
@@ -63,12 +63,12 @@ public class Users {
         this.password = password;
     }
 
-    public UserRole getUserRole() {
-        return userRole;
+    public List<UserRoles> getUserRoles() {
+        return userRoles;
     }
 
-    public void setUserRole(UserRole userRole) {
-        this.userRole = userRole;
+    public void setUserRoles(List<UserRoles> userRoles) {
+        this.userRoles = userRoles;
     }
 
     public LocalDate getDateOfRegistration() {

@@ -13,7 +13,8 @@ public class IrrigationAction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long actionId;
 
-    @OneToOne(mappedBy = "action")
+    @OneToOne
+    @JoinColumn(name = "Decisions_decisionId")
     private Decisions decision;
 
     @Enumerated(EnumType.STRING)

@@ -11,7 +11,8 @@ public class ProcessedEnvironmentalData {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long processedDataId;
 
-    @OneToOne(mappedBy = "processedData")
+    @OneToOne
+    @JoinColumn(name = "RawEnvironmentalData_rawDataId")
     private RawEnvironmentalData rawData;
 
     private String soilMoisture;
