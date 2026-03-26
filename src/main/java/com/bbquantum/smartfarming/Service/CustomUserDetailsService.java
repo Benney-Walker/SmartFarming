@@ -2,6 +2,7 @@ package com.bbquantum.smartfarming.Service;
 
 import com.bbquantum.smartfarming.Entity.Users;
 import com.bbquantum.smartfarming.Repository.UsersRepo;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;

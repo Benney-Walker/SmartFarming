@@ -18,6 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,19 +51,21 @@ public class AuthService {
     public ResponseEntity<?> addNewUser(AddNewUser addNewUser) {
         String userName = addNewUser.getUserName();
         String emailAddress = addNewUser.getEmailAddress();
+        String phoneNumber = addNewUser.getPhoneNumber();
         UserRole role = UserRole.valueOf(addNewUser.getRole());
 
         if (usersRepo.findByUserName(userName).isPresent()) {
-            return ResponseEntity.badRequest().body("User already exists");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("User already exists");
         }
 
         if (usersRepo.findByEmailAddress(emailAddress).isPresent()) {
-            return ResponseEntity.badRequest().body("Email address already exists");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email address already exists");
         }
 
         Users user = new Users();
         user.setUserName(userName);
         user.setEmailAddress(emailAddress);
+        user.setPhoneNumber(phoneNumber);
 
         UserRoles newRole = new UserRoles();
         newRole.setUser(user);
@@ -72,6 +75,7 @@ public class AuthService {
         userRoles.add(newRole);
 
         user.setUserRoles(userRoles);
+        user.setDateOfRegistration(LocalDate.now());
         usersRepo.save(user);
 
         return ResponseEntity.ok().build();
@@ -84,7 +88,7 @@ public class AuthService {
 
         Users user = usersRepo.findByUserName(userName).orElse(null);
         if (user == null) {
-            return ResponseEntity.badRequest().body("User not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
 
         if (fieldsRepo.findByFieldName(fieldName).isPresent()) {
@@ -110,12 +114,12 @@ public class AuthService {
     public ResponseEntity<?> initializeUserPassword(String emailAddress, String password) {
         Users user = usersRepo.findByEmailAddress(emailAddress).orElse(null);
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
 
         String storedPassword = user.getPassword();
         if (storedPassword != null) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
+            return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body("Password already set");
         }
 
@@ -127,12 +131,12 @@ public class AuthService {
     public ResponseEntity<?> authenticateUser(LoginRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getEmailAddress(),
+                        request.getUsername(),
                         request.getPassword()
                 )
         );
 
-        Users user = customUserDetailsService.getUserData(request.getEmailAddress());
+        Users user = customUserDetailsService.getUserData(request.getUsername());
         List<String> rolesList = user.getUserRoles().stream().map(
                 role -> role.getRoles().name()
         ).toList();
@@ -146,5 +150,18 @@ public class AuthService {
                         authToken
                 )
         );
+    }
+
+    public ResponseEntity<?> checkUsers(String emailAddress) {
+        Users user = usersRepo.findByEmailAddress(emailAddress).orElse(null);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+
+        if (user.getPassword() != null) {
+            return ResponseEntity.ok("Existed");
+        }
+
+        return ResponseEntity.ok("new user");
     }
 }

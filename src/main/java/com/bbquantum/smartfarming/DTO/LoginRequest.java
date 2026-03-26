@@ -1,17 +1,17 @@
 package com.bbquantum.smartfarming.DTO;
 
 public class LoginRequest {
-    private String emailAddress;
+    private String username;
 
     private String password;
 
-    public LoginRequest(String emailAddress, String password) {
-        this.emailAddress = emailAddress;
+    public LoginRequest(String username, String password) {
+        this.username = username;
         this.password = password;
     }
 
-    public String getEmailAddress() {
-        return emailAddress;
+    public String getUsername() {
+        return username;
     }
 
     public String getPassword() {

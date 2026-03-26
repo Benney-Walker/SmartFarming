@@ -19,12 +19,16 @@ public class Users {
     @Column(unique = true, nullable = false,  length = 100)
     private String emailAddress;
 
+    @Column(nullable = false)
+    private String phoneNumber;
+
+    @Column(length = 100)
     private String password;
+
+    private LocalDate dateOfRegistration;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<UserRoles> userRoles;
-
-    private LocalDate dateOfRegistration;
 
     @OneToMany(mappedBy = "user")
     private List<Fields> fields;
@@ -53,6 +57,14 @@ public class Users {
 
     public void setEmailAddress(String contact) {
         this.emailAddress = contact;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public String getPassword() {

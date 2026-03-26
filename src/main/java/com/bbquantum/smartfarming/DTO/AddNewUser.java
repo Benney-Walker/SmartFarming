@@ -5,11 +5,14 @@ public class AddNewUser {
 
     private String emailAddress;
 
+    private String phoneNumber;
+
     private String role;
 
-    public AddNewUser(String userName, String emailAddress, String role) {
+    public AddNewUser(String userName, String emailAddress, String phoneNumber, String role) {
         this.userName = userName;
         this.emailAddress = emailAddress;
+        this.phoneNumber = phoneNumber;
         this.role = role;
     }
 
@@ -19,6 +22,10 @@ public class AddNewUser {
 
     public String getEmailAddress() {
         return emailAddress;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
     public String getRole() {
