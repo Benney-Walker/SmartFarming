@@ -1,5 +1,6 @@
 package com.bbquantum.smartfarming.Entity;
 
+import com.bbquantum.smartfarming.Constants.FieldStatus;
 import com.bbquantum.smartfarming.Constants.IrrigationDecision;
 import jakarta.persistence.*;
 
@@ -30,6 +31,9 @@ public class Fields {
 
     @OneToMany(mappedBy = "field")
     private List<Decisions> decisions;
+
+    @Enumerated(EnumType.STRING)
+    private FieldStatus fieldStatus;
 
     public Fields() {}
 
@@ -87,5 +91,13 @@ public class Fields {
 
     public void setDecisions(List<Decisions> decisions) {
         this.decisions = decisions;
+    }
+
+    public FieldStatus getFieldStatus() {
+        return fieldStatus;
+    }
+
+    public void setFieldStatus(FieldStatus fieldStatus) {
+        this.fieldStatus = fieldStatus;
     }
 }

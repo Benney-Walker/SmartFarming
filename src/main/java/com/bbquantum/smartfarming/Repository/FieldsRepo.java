@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface FieldsRepo extends JpaRepository<Fields, Integer> {
     Optional<Fields> findByFieldName(String fieldName);
+
+    Optional<Fields> findByFieldId(String fieldId);
 }

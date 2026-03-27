@@ -6,12 +6,12 @@ public class AddNewField {
 
     private String fieldLocation;
 
-    private String userName;
+    private String userId;
 
-    public AddNewField(String fieldName, String fieldLocation, String userName) {
+    public AddNewField(String fieldName, String fieldLocation, String userId) {
         this.fieldName = fieldName;
         this.fieldLocation = fieldLocation;
-        this.userName = userName;
+        this.userId = userId;
     }
 
     public String getFieldName() {
@@ -22,7 +22,7 @@ public class AddNewField {
         return fieldLocation;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUserId() {
+        return userId;
     }
 }
