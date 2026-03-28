@@ -1,7 +1,6 @@
-package com.bbquantum.smartfarming.SecurityConfig;
+package com.bbquantum.smartfarming.Config;
 
 import com.bbquantum.smartfarming.Utility.JwtUtility;
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

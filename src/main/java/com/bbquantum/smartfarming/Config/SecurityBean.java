@@ -1,4 +1,4 @@
-package com.bbquantum.smartfarming.SecurityConfig;
+package com.bbquantum.smartfarming.Config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
