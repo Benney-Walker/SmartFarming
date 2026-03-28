@@ -19,6 +19,8 @@ public class Fields {
     @Column(nullable = false)
     private String fieldLocation;
 
+    private String fieldSize;
+
     @Column(nullable = false)
     private LocalDate dateOfRegistration;
 
@@ -59,6 +61,14 @@ public class Fields {
 
     public void setFieldLocation(String fieldLocation) {
         this.fieldLocation = fieldLocation;
+    }
+
+    public String getFieldSize() {
+        return fieldSize;
+    }
+
+    public void setFieldSize(String fieldSize) {
+        this.fieldSize = fieldSize;
     }
 
     public LocalDate getDateOfRegistration() {

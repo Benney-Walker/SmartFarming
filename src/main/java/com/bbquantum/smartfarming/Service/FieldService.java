@@ -1,6 +1,7 @@
 package com.bbquantum.smartfarming.Service;
 
 import com.bbquantum.smartfarming.DTO.AddNewField;
+import com.bbquantum.smartfarming.DTO.ViewFieldDetails;
 import com.bbquantum.smartfarming.Entity.Fields;
 import com.bbquantum.smartfarming.Entity.Users;
 import com.bbquantum.smartfarming.Repository.FieldsRepo;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +53,7 @@ public class FieldService {
         field.setFieldId(idGenerationUtil.generateEntityId("FIELD"));
         field.setFieldName(fieldName);
         field.setFieldLocation(fieldLocation);
+        field.setDateOfRegistration(LocalDate.now());
         field.setUser(user);
         fieldsRepo.save(field);
 
@@ -62,5 +65,28 @@ public class FieldService {
         usersRepo.save(user);
 
         return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity<?> loadAllFields() {
+        List<Fields> fields = fieldsRepo.findAll();
+        if (fields.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+                    "message", "No fields found"
+            ));
+        }
+
+        return ResponseEntity.ok(fields.stream().map(field -> {
+            String farmName = field.getFieldName();
+            String fieldLocation = field.getFieldLocation();
+            String fieldSize = field.getFieldSize();
+            String fieldStatus = field.getFieldStatus().name();
+
+            return new ViewFieldDetails(
+                    farmName,
+                    fieldLocation,
+                    fieldSize,
+                    fieldStatus
+            );
+        }).toList());
     }
 }

@@ -1,6 +1,7 @@
 package com.bbquantum.smartfarming.Entity;
 
 import com.bbquantum.smartfarming.Constants.UserRole;
+import com.bbquantum.smartfarming.Constants.UserStatus;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -26,11 +27,14 @@ public class Users {
 
     private LocalDate dateOfRegistration;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
-    private List<UserRoles> userRoles;
+    @Enumerated(EnumType.STRING)
+    private UserRole userRole;
 
     @OneToMany(mappedBy = "user")
     private List<Fields> fields;
+
+    @Enumerated(EnumType.STRING)
+    private UserStatus userStatus;
 
     public Users(){}
 
@@ -74,12 +78,12 @@ public class Users {
         this.password = password;
     }
 
-    public List<UserRoles> getUserRoles() {
-        return userRoles;
+    public UserRole getUserRole() {
+        return userRole;
     }
 
-    public void setUserRoles(List<UserRoles> userRoles) {
-        this.userRoles = userRoles;
+    public void setUserRole(UserRole userRole) {
+        this.userRole = userRole;
     }
 
     public LocalDate getDateOfRegistration() {
@@ -96,5 +100,13 @@ public class Users {
 
     public void setFields(List<Fields> fields) {
         this.fields = fields;
+    }
+
+    public UserStatus getUserStatus() {
+        return userStatus;
+    }
+
+    public void setUserStatus(UserStatus userStatus) {
+        this.userStatus = userStatus;
     }
 }

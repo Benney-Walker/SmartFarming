@@ -15,15 +15,26 @@ public class IdGenerationUtil {
 
     public String generateEntityId(String entityName) {
         String entityId = "";
+        String prefix = "";
+        long idCode = 0;
 
         switch (entityName) {
             case "FIELD":
-                String prefix = "FD";
-                long idCode = 100700;
+                prefix = "FD";
+                idCode = 100700;
                 entityId = generateEntityId(entityName, prefix, idCode);
                 break;
 
             case "USER":
+                prefix = "UR";
+                idCode = 100200;
+                entityId = generateEntityId(entityName, prefix, idCode);
+                break;
+
+            case "LOG":
+                prefix = "LR";
+                idCode = 100100100;
+                entityId = generateEntityId(entityName, prefix, idCode);
                 break;
         }
 

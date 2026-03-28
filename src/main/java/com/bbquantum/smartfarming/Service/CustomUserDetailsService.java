@@ -26,14 +26,14 @@ public class CustomUserDetailsService implements UserDetailsService {
         Users user = usersRepo.findByEmailAddress(emailAddress)
                 .orElseThrow(() -> new UsernameNotFoundException("Invalid username or password"));
 
-        List<SimpleGrantedAuthority> authorities = user.getUserRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.toString()))
-                .toList();
-
         return new User(
                 user.getEmailAddress(),
                 user.getPassword(),
-                authorities
+                List.of(
+                        new SimpleGrantedAuthority(
+                                user.getUserRole().name()
+                        )
+                )
         );
     }
 

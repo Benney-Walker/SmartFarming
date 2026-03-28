@@ -1,10 +1,8 @@
 package com.bbquantum.smartfarming.Service;
 
 import com.bbquantum.smartfarming.Constants.UserRole;
-import com.bbquantum.smartfarming.DTO.AddNewUser;
-import com.bbquantum.smartfarming.DTO.LoginRequest;
-import com.bbquantum.smartfarming.DTO.LoginResponse;
-import com.bbquantum.smartfarming.Entity.UserRoles;
+import com.bbquantum.smartfarming.Constants.UserStatus;
+import com.bbquantum.smartfarming.DTO.*;
 import com.bbquantum.smartfarming.Entity.Users;
 import com.bbquantum.smartfarming.Repository.UsersRepo;
 import com.bbquantum.smartfarming.Utility.JwtUtility;
@@ -62,14 +60,7 @@ public class UserService {
         user.setEmailAddress(emailAddress);
         user.setPhoneNumber(phoneNumber);
 
-        UserRoles newRole = new UserRoles();
-        newRole.setUser(user);
-        newRole.setRoles(role);
-
-        List<UserRoles> userRoles = new ArrayList<>();
-        userRoles.add(newRole);
-
-        user.setUserRoles(userRoles);
+        user.setUserRole(role);
         user.setDateOfRegistration(LocalDate.now());
         usersRepo.save(user);
 
@@ -104,9 +95,9 @@ public class UserService {
         );
 
         Users user = customUserDetailsService.getUserData(request.getUsername());
-        List<String> rolesList = user.getUserRoles().stream().map(
-                role -> role.getRoles().name()
-        ).toList();
+        List<String> rolesList = List.of(
+                user.getUserRole().name()
+        );
 
         String authToken = jwtUtility.generateJwtToken(user.getUserName(), rolesList);
 
@@ -136,7 +127,61 @@ public class UserService {
         ));
     }
 
-    public Users getUser(String userId) {
-        return usersRepo.findByUserId(userId).orElse(null);
+    public ResponseEntity<?> changeUserStatus(String userId, String status) {
+        Users user = usersRepo.findByUserId(userId).orElse(null);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        user.setUserStatus(UserStatus.valueOf(status));
+        usersRepo.save(user);
+        return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity<?> viewUserDetails(String userId) {
+        Users user = usersRepo.findByUserId(userId).orElse(null);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        ViewUserDetails userDetails = new ViewUserDetails(
+                user.getUserId(),
+                user.getUserName(),
+                user.getEmailAddress(),
+                user.getPhoneNumber(),
+                user.getUserRole().name(),
+                user.getUserStatus().name()
+        );
+
+        return ResponseEntity.ok(userDetails);
+    }
+
+    public ResponseEntity<?> loadAllUsers() {
+        List<Users> users = usersRepo.findAll();
+        if (users.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+                    "message", "No users found"
+            ));
+        }
+
+        return ResponseEntity.ok(
+                users.stream().map(user -> {
+                    String userId = user.getUserId();
+                    String userName = user.getUserName();
+                    String emailAddress = user.getEmailAddress();
+                    String phoneNumber = user.getPhoneNumber();
+                    String userRole = user.getUserRole().name();
+                    String userStatus = user.getUserStatus().name();
+
+                    return new ViewUserDetails(
+                            userId,
+                            userName,
+                            emailAddress,
+                            phoneNumber,
+                            userRole,
+                            userStatus
+                    );
+                }).toList()
+        );
     }
 }
