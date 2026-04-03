@@ -5,10 +5,7 @@ import com.bbquantum.smartfarming.DTO.AddNewUser;
 import com.bbquantum.smartfarming.Service.FieldService;
 import com.bbquantum.smartfarming.Service.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -23,7 +20,7 @@ public class AdminController {
         this.fieldService = fieldService;
     }
 
-    @PostMapping("/add-new-user")
+    @PostMapping("/v1/add-new-user")
     public ResponseEntity<?> addNewUser(@RequestBody AddNewUser addNewUser) {
         return userService.addNewUser(addNewUser);
     }
@@ -31,5 +28,15 @@ public class AdminController {
     @PostMapping("/v1/add-new-field")
     public ResponseEntity<?> addNewField(@RequestBody AddNewField addNewField) {
         return fieldService.addNewField(addNewField);
+    }
+
+    @GetMapping("/v1/load-all-fields")
+    public ResponseEntity<?> loadAllFields() {
+        return fieldService.loadAllFields();
+    }
+
+    @GetMapping("/v1/total-users")
+    public ResponseEntity<?> totalUsers() {
+        return userService.getTotalUsers();
     }
 }
