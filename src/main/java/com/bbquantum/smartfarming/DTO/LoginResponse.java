@@ -1,17 +1,15 @@
 package com.bbquantum.smartfarming.DTO;
 
-import java.util.List;
-
 public class LoginResponse {
     private String userName;
 
-    private List<String> userRoles;
+    private String role;
 
     private String token;
 
-    public LoginResponse(String userName, List<String> userRoles, String token) {
+    public LoginResponse(String userName, String role, String token) {
         this.userName = userName;
-        this.userRoles = userRoles;
+        this.role = role;
         this.token = token;
     }
 
@@ -19,8 +17,8 @@ public class LoginResponse {
         return userName;
     }
 
-    public List<String> getUserRoles() {
-        return userRoles;
+    public String getUserRole() {
+        return role;
     }
 
     public String getToken() {
