@@ -101,13 +101,11 @@ public class UserService {
 
         String authToken = jwtUtility.generateJwtToken(user.getUserName(), rolesList);
 
-        return ResponseEntity.ok(
-                new LoginResponse(
-                        user.getUserName(),
-                        rolesList,
-                        authToken
-                )
-        );
+        return ResponseEntity.ok(Map.of(
+                "username", user.getUserName(),
+                "token", authToken,
+                "role", user.getUserRole().name()
+        ));
     }
 
     public ResponseEntity<?> checkUsers(String emailAddress) {
@@ -183,5 +181,11 @@ public class UserService {
                     );
                 }).toList()
         );
+    }
+
+    public ResponseEntity<?> getTotalUsers() {
+        return ResponseEntity.ok(Map.of(
+                "totalUsers", usersRepo.count()
+        ));
     }
 }
