@@ -33,4 +33,9 @@ public class AuthController {
                 initializeUser.getEmailAddress(),
                 initializeUser.getInitialPassword());
     }
+
+    @PostMapping("/v1/add-new-user")
+    public ResponseEntity<?> addNewUser(@RequestBody AddNewUser addNewUser) {
+        return userService.addNewUser(addNewUser);
+    }
 }

@@ -1,5 +1,7 @@
 package com.bbquantum.smartfarming.DTO;
 
+import java.util.List;
+
 public class ViewUserDetails {
 
     private String userId;
@@ -10,11 +12,11 @@ public class ViewUserDetails {
 
     private String phoneNumber;
 
-    private String role;
+    private List<String> role;
 
     private String status;
 
-    public ViewUserDetails(String userId, String userName, String emailAddress, String phoneNumber, String role, String status) {
+    public ViewUserDetails(String userId, String userName, String emailAddress, String phoneNumber, List<String> role, String status) {
         this.userId = userId;
         this.userName = userName;
         this.emailAddress = emailAddress;
@@ -39,7 +41,7 @@ public class ViewUserDetails {
         return phoneNumber;
     }
 
-    public String getRole() {
+    public List<String> getRole() {
         return role;
     }
 

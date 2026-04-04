@@ -31,6 +31,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
+        System.out.println("URL: " + request.getRequestURL());
 
         // no token → continue request
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -43,16 +44,19 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String token = authHeader.substring(7);
 
             String username = jwtUtility.getUsername(token);
+            System.out.println("Username: " + username);
 
             if(username != null
-                    && !jwtUtility.isTokenExpired(token)
+                    && jwtUtility.isTokenValid(token, username)
                     && SecurityContextHolder.getContext().getAuthentication() == null){
+
+                System.out.println(">>> INSIDE IF - setting authentication");
 
                 List<String> roles = jwtUtility.getRoles(token);
 
                 List<GrantedAuthority> authorities = roles.stream()
                         .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
+                        .collect(Collectors.toUnmodifiableList());
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
@@ -65,10 +69,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
 
         }catch (Exception e){
-
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            System.out.println(">>> FILTER EXCEPTION: " + e.getMessage());
             return;
         }
+
+        System.out.println(">>> BEFORE CHAIN - auth: "
+                + SecurityContextHolder.getContext().getAuthentication());
 
         filterChain.doFilter(request, response);
     }

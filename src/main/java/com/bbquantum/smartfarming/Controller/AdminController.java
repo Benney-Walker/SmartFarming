@@ -20,11 +20,6 @@ public class AdminController {
         this.fieldService = fieldService;
     }
 
-    @PostMapping("/v1/add-new-user")
-    public ResponseEntity<?> addNewUser(@RequestBody AddNewUser addNewUser) {
-        return userService.addNewUser(addNewUser);
-    }
-
     @PostMapping("/v1/add-new-field")
     public ResponseEntity<?> addNewField(@RequestBody AddNewField addNewField) {
         return fieldService.addNewField(addNewField);

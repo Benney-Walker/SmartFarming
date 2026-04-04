@@ -3,8 +3,11 @@ package com.bbquantum.smartfarming.Service;
 import com.bbquantum.smartfarming.Constants.UserRole;
 import com.bbquantum.smartfarming.Constants.UserStatus;
 import com.bbquantum.smartfarming.DTO.*;
+import com.bbquantum.smartfarming.Entity.UserRoles;
 import com.bbquantum.smartfarming.Entity.Users;
+import com.bbquantum.smartfarming.Repository.UserRolesRepo;
 import com.bbquantum.smartfarming.Repository.UsersRepo;
+import com.bbquantum.smartfarming.Utility.IdGenerationUtil;
 import com.bbquantum.smartfarming.Utility.JwtUtility;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,21 +34,27 @@ public class UserService {
 
     private final JwtUtility jwtUtility;
 
+    private final IdGenerationUtil idGenerationUtil;
+
+    private final UserRolesRepo userRolesRepo;
+
     public UserService(UsersRepo usersRepo, BCryptPasswordEncoder bCryptPasswordEncoder,
                        AuthenticationManager authenticationManager, CustomUserDetailsService customUserDetailsService,
-                       JwtUtility jwtUtility) {
+                       JwtUtility jwtUtility,  IdGenerationUtil idGenerationUtil, UserRolesRepo userRolesRepo) {
         this.usersRepo = usersRepo;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.authenticationManager = authenticationManager;
         this.customUserDetailsService = customUserDetailsService;
         this.jwtUtility = jwtUtility;
+        this.idGenerationUtil = idGenerationUtil;
+        this.userRolesRepo = userRolesRepo;
     }
 
     public ResponseEntity<?> addNewUser(AddNewUser addNewUser) {
         String userName = addNewUser.getUserName();
         String emailAddress = addNewUser.getEmailAddress();
         String phoneNumber = addNewUser.getPhoneNumber();
-        UserRole role = UserRole.valueOf(addNewUser.getRole());
+        String role = addNewUser.getRole();
 
         if (usersRepo.findByUserName(userName).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("User already exists");
@@ -56,15 +65,34 @@ public class UserService {
         }
 
         Users user = new Users();
+        user.setUserId(idGenerationUtil.generateEntityId("USER"));
         user.setUserName(userName);
         user.setEmailAddress(emailAddress);
         user.setPhoneNumber(phoneNumber);
-
-        user.setUserRole(role);
         user.setDateOfRegistration(LocalDate.now());
         usersRepo.save(user);
 
+        user.setUserRoles(addUserRoles(
+                user,
+                List.of(role)
+        ));
+        usersRepo.save(user);
+
         return ResponseEntity.ok().build();
+    }
+
+    private List<UserRoles> addUserRoles(Users user, List<String> roles) {
+        List<UserRoles> userRoles = new ArrayList<>();
+        for (String role : roles) {
+            UserRoles userRole = new UserRoles(
+                    user,
+                    UserRole.valueOf(role)
+            );
+            userRolesRepo.save(userRole);
+            userRoles.add(userRole);
+        }
+
+        return userRoles;
     }
 
     public ResponseEntity<?> initializeUserPassword(String emailAddress, String password) {
@@ -95,16 +123,16 @@ public class UserService {
         );
 
         Users user = customUserDetailsService.getUserData(request.getUsername());
-        List<String> rolesList = List.of(
-                user.getUserRole().name()
-        );
+        List<String> rolesList = user.getUserRoles().stream().map(
+                role -> role.getUserRole().name()
+        ).toList();
 
-        String authToken = jwtUtility.generateJwtToken(user.getUserName(), rolesList);
+        String authToken = jwtUtility.generateJwtToken(user.getEmailAddress(), rolesList);
 
         return ResponseEntity.ok(Map.of(
                 "username", user.getUserName(),
                 "token", authToken,
-                "role", user.getUserRole().name()
+                "role", rolesList.getFirst()
         ));
     }
 
@@ -142,12 +170,16 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
+        List<String> roleList = user.getUserRoles().stream().map(
+                role -> role.getUserRole().name()
+        ).toList();
+
         ViewUserDetails userDetails = new ViewUserDetails(
                 user.getUserId(),
                 user.getUserName(),
                 user.getEmailAddress(),
                 user.getPhoneNumber(),
-                user.getUserRole().name(),
+                roleList,
                 user.getUserStatus().name()
         );
 
@@ -168,7 +200,9 @@ public class UserService {
                     String userName = user.getUserName();
                     String emailAddress = user.getEmailAddress();
                     String phoneNumber = user.getPhoneNumber();
-                    String userRole = user.getUserRole().name();
+                    List<String> userRoles = user.getUserRoles().stream().map(
+                            role -> role.getUserRole().name()
+                    ).toList();
                     String userStatus = user.getUserStatus().name();
 
                     return new ViewUserDetails(
@@ -176,7 +210,7 @@ public class UserService {
                             userName,
                             emailAddress,
                             phoneNumber,
-                            userRole,
+                            userRoles,
                             userStatus
                     );
                 }).toList()

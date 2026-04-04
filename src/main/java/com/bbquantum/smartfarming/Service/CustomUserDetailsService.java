@@ -2,7 +2,6 @@ package com.bbquantum.smartfarming.Service;
 
 import com.bbquantum.smartfarming.Entity.Users;
 import com.bbquantum.smartfarming.Repository.UsersRepo;
-import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,14 +25,14 @@ public class CustomUserDetailsService implements UserDetailsService {
         Users user = usersRepo.findByEmailAddress(emailAddress)
                 .orElseThrow(() -> new UsernameNotFoundException("Invalid username or password"));
 
+        List<SimpleGrantedAuthority> authorities = user.getUserRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.getUserRole().name()))
+                .toList();
+
         return new User(
                 user.getEmailAddress(),
                 user.getPassword(),
-                List.of(
-                        new SimpleGrantedAuthority(
-                                user.getUserRole().name()
-                        )
-                )
+                authorities
         );
     }
 

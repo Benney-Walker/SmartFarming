@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -13,10 +14,11 @@ import java.util.function.Function;
 @Component
 public class JwtUtility {
 
-    private String jwtSecret =
-            "Bsc_final_year_project_for_Ben_Akua_and_Desmond_super_secure_secret_key_2026";
+    @Value("${jwt.secret}")
+    private String jwtSecret;
 
-    private int jwtExpirationInMs = 86400000; // 24 hours
+    @Value("${jwt.expiration}")
+    private int jwtExpirationInMs; // 24 hours
 
     // generate token
     public String generateJwtToken(String username, List<String> roles) {
